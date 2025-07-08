@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  validator:
+    image: pi2/vsl-validator:latest
+    container_name: vsl-validator
+    ports:
+      - "44444:44444"
+    command: # Fresh start
+      - /bin/sh
+      - -c
+      - |
+        echo "Starting fresh validator..."
+        ./vsl --fresh-start
+    # command: # Use existing database
+    #   - /bin/sh
+    #   - -c
+    #   - |
+    #     echo "Starting validator with existing database..."
+    #     ./vsl --use-existing-db
+    volumes:
+      - ./data:/var/lib/vsl
+    restart: unless-stopped
+
+  explorer:
+    image: pi2/vsl-explorer:latest
+    container_name: vsl-explorer
+    ports:
+      - "4000:4000"
+    depends_on:
+      - validator
+    restart: unless-stopped
